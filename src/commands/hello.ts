@@ -1,7 +1,7 @@
 import { CommandInteraction, Client } from 'discord.js'
-import { Command } from '../command'
+import { ChatCommand } from '../command'
 
-export const Hello: Command = {
+export const Hello: ChatCommand = {
   name: 'hello',
   description: 'Returns a greeting',
   run: async (client: Client, interaction: CommandInteraction) => {

@@ -18,7 +18,7 @@
     "sourceMap": false,
     "baseUrl": "./"
   },
-  "files": ["src/boolbot.js", "src/deployCommands.ts"],
+  "files": ["src/boolbot.ts"],
   "include": ["./**/*.ts", "src/boolbot.js"],
   "exclude": ["node_modules", "dist"]
 }

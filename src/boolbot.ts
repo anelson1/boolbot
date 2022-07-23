@@ -1,7 +1,7 @@
 import { Client, Collection, GatewayIntentBits, Interaction } from 'discord.js'
 import * as dotenv from 'dotenv'
-import ready from './listiners/ready'
-import interactionCreate from './listiners/interactionCreate'
+import ready from './listener/ready'
+import interactionCreate from './listener/interactionCreate'
 
 dotenv.config()
 
