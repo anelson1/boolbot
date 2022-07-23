@@ -1,35 +1,13 @@
 import { Client, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember } from 'discord.js'
 import { ChatCommand } from '../command'
-import fs from 'fs'
-
-type BoolResponse = {
-  id: string
-  RSVP: string
-}
 
 export const Bool: ChatCommand = {
-  name: 'bool',
-  description: 'Ask the fellas to bool on a given date',
-  options: [
-    {
-      name: 'date',
-      type: 3,
-      description: 'The date on which to bool',
-      required: true,
-    },
-  ],
+  name: 'listbool',
+  description: 'Lists everyone who was asked to bool and their responses',
   run: async (client: Client, interaction: any) => {
     console.log(interaction)
     const guild = client.guilds.cache.get('423937254046826496')
-    const boolData = {
-      boolers: [] as Array<BoolResponse>,
-    }
-    //CHANGE TO BOOL ROLE BEFORE FINALIZING
-    const boolinRole = await guild?.roles.fetch('760375992513724426')
-    boolinRole!.members.forEach((member) => {
-      console.log(member)
-      let newBooler: any = { id: member.id, RSVP: 'NA' }
-      boolData.boolers.push(newBooler)
+    guild?.roles.cache.get('760375992513724426')?.members.forEach((member) => {
       member.createDM().then((dm) => {
         const embed = new EmbedBuilder()
           .setColor(0x350f4f)
@@ -41,8 +19,6 @@ export const Bool: ChatCommand = {
         dm.send({ embeds: [embed], components: [row] })
       })
     })
-    const data = JSON.stringify(boolData)
-    fs.writeFile('./src/data/booldata.json', data, (err) => {})
     const member = interaction.member as GuildMember
     console.log(member.user.avatar, member.user.avatarURL())
     const embed = new EmbedBuilder()

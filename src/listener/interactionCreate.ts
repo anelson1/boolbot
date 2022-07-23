@@ -5,7 +5,7 @@ import { Commands } from '../commands'
 export default (client: Client): void => {
   client.on('interactionCreate', async (interaction: any) => {
     if (interaction.isButton()) {
-      handleBoolResponse(interaction)
+      handleBoolResponse(interaction, client)
     }
     if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
       await handleSlashCommand(client, interaction)
