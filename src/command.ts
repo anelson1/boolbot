@@ -1,5 +1,6 @@
-import { BaseInteraction, ChatInputApplicationCommandData, Client } from 'discord.js'
+import { ChatInputApplicationCommandData, Client } from 'discord.js'
 
 export interface ChatCommand extends ChatInputApplicationCommandData {
-  run: (client: Client, interaction: any) => void
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	run: (client: Client, interaction: any) => void
 }
