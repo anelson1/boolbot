@@ -1,8 +1,14 @@
-import { ButtonInteraction, Client, EmbedBuilder, GuildMember, TextChannel } from 'discord.js'
+import { ButtonInteraction, Client, EmbedBuilder, TextChannel } from 'discord.js'
 import fs from 'fs'
 type BoolResponse = {
   id: string
   RSVP: string
+  name: string
+}
+
+export type BoolData = {
+  date: string
+  boolers: Array<BoolResponse>
 }
 
 export const handleBoolResponse = async (interaction: ButtonInteraction, client: Client) => {
@@ -25,24 +31,22 @@ export const handleBoolResponse = async (interaction: ButtonInteraction, client:
   }
   interaction.reply({ embeds: [embed] })
   const general = client.channels.cache.get('423937254046826498') as TextChannel
-  general.send({ embeds: [embed] })
-  const boolData = {
-    boolers: [newBooler],
+  if (interaction.channelId !== general.id) {
+    general.send({ embeds: [embed] })
   }
   fs.readFile('./src/data/booldata.json', 'utf8', (err, content) => {
-    if (err?.errno === -2) {
-      const data = JSON.stringify(boolData)
-      fs.writeFile('./src/data/booldata.json', data, { flag: 'wx' }, (err) => {})
-      return
-    }
-    const boolFile = JSON.parse(content) as { boolers: Array<BoolResponse> }
-    boolFile.boolers.forEach((booler, i) => {
+    const boolFile = JSON.parse(content) as BoolData
+    let alreadyIn = false
+    boolFile.boolers.forEach((booler) => {
       if (booler.id === newBooler.id) {
-        boolFile.boolers.splice(i, 1)
+        booler.RSVP = newBooler.RSVP
+        alreadyIn = true
       }
     })
-
-    boolFile.boolers.push(newBooler)
+    if (!alreadyIn) {
+      newBooler.name = user.username
+      boolFile.boolers.push(newBooler)
+    }
     const boolers = JSON.stringify(boolFile)
     fs.writeFile('./src/data/booldata.json', boolers, (err) => {})
   })

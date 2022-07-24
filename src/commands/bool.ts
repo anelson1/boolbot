@@ -19,16 +19,17 @@ export const Bool: ChatCommand = {
     },
   ],
   run: async (client: Client, interaction: any) => {
-    console.log(interaction)
-    const guild = client.guilds.cache.get('423937254046826496')
+    const guild = await client.guilds.fetch('423937254046826496')
     const boolData = {
+      date: interaction.options._hoistedOptions[0].value,
       boolers: [] as Array<BoolResponse>,
     }
-    //CHANGE TO BOOL ROLE BEFORE FINALIZING
-    const boolinRole = await guild?.roles.fetch('760375992513724426')
+    await guild.members.fetch()
+    const boolinRole = guild.roles.cache.get('855652264663318540')
+    console.log(boolinRole?.name)
     boolinRole!.members.forEach((member) => {
-      console.log(member)
-      let newBooler: any = { id: member.id, RSVP: 'NA' }
+      console.log(member.nickname)
+      let newBooler: any = { id: member.id, RSVP: 'NA', name: member.nickname }
       boolData.boolers.push(newBooler)
       member.createDM().then((dm) => {
         const embed = new EmbedBuilder()
@@ -44,7 +45,6 @@ export const Bool: ChatCommand = {
     const data = JSON.stringify(boolData)
     fs.writeFile('./src/data/booldata.json', data, (err) => {})
     const member = interaction.member as GuildMember
-    console.log(member.user.avatar, member.user.avatarURL())
     const embed = new EmbedBuilder()
       .setColor(0x350f4f)
       .setTitle('Sending Bool Invites')
