@@ -29,9 +29,11 @@ export const ListBool: ChatCommand = {
 				}
 				embed.addFields({ name: fieldText, value: '---------------------------------' })
 			})
-			let sortOrder = [':white_check_mark:', ':x:', ':grey_question:']
-			let sortedBoolers : APIEmbedField[] = embed.data.fields?.slice() as APIEmbedField[];
-			embed.setFields(sortedBoolers.sort((a, b) => (sortOrder.indexOf(a.name.slice(0, a.name.indexOf(' '))) < sortOrder.indexOf(b.name.slice(0, b.name.indexOf(' '))) ? -1 : 1)))
+			const sortOrder = [':white_check_mark:', ':x:', ':grey_question:']
+			const sortedBoolers: APIEmbedField[] = embed.data.fields?.slice() as APIEmbedField[]
+			embed.setFields(
+				sortedBoolers.sort((a, b) => (sortOrder.indexOf(a.name.slice(0, a.name.indexOf(' '))) < sortOrder.indexOf(b.name.slice(0, b.name.indexOf(' '))) ? -1 : 1)),
+			)
 			const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
 				new ButtonBuilder().setCustomId('y').setLabel('Yes').setStyle(ButtonStyle.Success),
 				new ButtonBuilder().setCustomId('n').setLabel('No').setStyle(ButtonStyle.Danger),

@@ -27,17 +27,15 @@ export const Bool: ChatCommand = {
 		}
 		await guild.members.fetch()
 		const boolinRole = guild.roles.cache.get('855652264663318540')
-		console.log(boolinRole?.name)
 		boolinRole?.members.forEach((member) => {
-			console.log(member.nickname)
 			const newBooler: BoolResponse = { id: member.id, RSVP: 'NA', name: member.nickname }
 			boolData.boolers.push(newBooler)
 			member.createDM().then((dm) => {
 				const embed = new EmbedBuilder()
 					.setColor(0x350f4f)
 					.setTitle('Bool Invite')
-					.setAuthor({ name: member.nickname as string, iconURL: member.user.avatarURL() as string })
-					.setDescription(member.nickname + ' Would like to bool on ' + interaction.options._hoistedOptions[0].value)
+					.setAuthor({ name: interaction.user.username as string, iconURL: interaction.user.avatarURL() })
+					.setDescription(interaction.user.username + ' would like to bool on ' + interaction.options._hoistedOptions[0].value)
 					.setTimestamp()
 					.setFooter({ text: 'Nelson Net | 2022', iconURL: 'https://i.pinimg.com/originals/8f/a0/27/8fa027d12ec18ac6fcb4567523f64fe3.jpg' })
 				dm.send({ embeds: [embed], components: [row] })
