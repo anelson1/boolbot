@@ -37,7 +37,6 @@ export const TotalEquity: ChatCommand = {
 			try {
 				while (message) {
 					const limitToFetch = limit >= 100 ? 100 : limit
-					console.log(limit, limitToFetch)
 					if (limitToFetch > 0) {
 						await chan.messages.fetch({ limit: limitToFetch, before: message.id }).then((messagePage) => {
 							messagePage.forEach((msg) => {
@@ -57,7 +56,6 @@ export const TotalEquity: ChatCommand = {
 							})
 							limit = limit - 100
 						})
-						console.log(messagesCounted)
 						const lastRoundMessageCount = messagesCountedHistory.pop()
 						messagesCountedHistory.push(messagesCounted)
 						if (messagesCounted === initalLimit || lastRoundMessageCount === messagesCounted) {
@@ -72,7 +70,6 @@ export const TotalEquity: ChatCommand = {
 				console.log(e)
 			}
 			stakeholders.sort((a, b) => b.count - a.count)
-			console.log(stakeholders)
 			const embed = new EmbedBuilder()
 				.setColor(0x118c4f)
 				.setTitle('Equity')
@@ -93,7 +90,6 @@ export const TotalEquity: ChatCommand = {
 
 				embed.addFields({ name: fieldText, value: '---------------------------------' })
 			})
-			console.log(embed)
 			await interaction.followUp({ embeds: [embed] })
 		}
 	},

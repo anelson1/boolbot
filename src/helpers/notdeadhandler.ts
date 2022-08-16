@@ -6,7 +6,6 @@ export const handleNotDead = (interaction: ButtonInteraction, client: Client) =>
 	memberRoles.add(notDeadRole)
 	const member = interaction.member as GuildMember
 	const user = interaction.user as User
-	console.log(member)
 	const embed = new EmbedBuilder()
 		.setTitle('Not Dead')
 		.setAuthor({ name: member.nickname as string, iconURL: user.avatarURL() as string })
