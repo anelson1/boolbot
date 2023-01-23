@@ -1,4 +1,4 @@
-import { Client, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, TextChannel } from 'discord.js'
+import { Client, EmbedBuilder, TextChannel } from 'discord.js'
 import { ChatCommand } from '../command'
 type StakeholderData = {
 	name: string

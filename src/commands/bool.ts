@@ -43,7 +43,7 @@ export const Bool: ChatCommand = {
 		})
 		const data = JSON.stringify(boolData)
 		fs.writeFile('./src/data/booldata.json', data, (err) => {
-			if(err){
+			if (err) {
 				console.log(err)
 			}
 		})

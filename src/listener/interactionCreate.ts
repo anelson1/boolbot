@@ -21,7 +21,7 @@ export default (client: Client): void => {
 		if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
 			await handleSlashCommand(client, interaction as ChatInputCommandInteraction)
 		}
-		
+
 	})
 }
 
