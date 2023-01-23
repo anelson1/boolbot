@@ -43,7 +43,9 @@ export const Bool: ChatCommand = {
 		})
 		const data = JSON.stringify(boolData)
 		fs.writeFile('./src/data/booldata.json', data, (err) => {
-			console.log(err)
+			if(err){
+				console.log(err)
+			}
 		})
 		const member = interaction.member as GuildMember
 		const embed = new EmbedBuilder()
