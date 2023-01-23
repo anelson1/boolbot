@@ -8,8 +8,7 @@ const calculateIntersect = (gamers: GameResponse[]) => {
 	gamers.forEach(gamer => {
 		arr.push(gamer.days)
 	})
-	return arr.reduce((a, c) => a.filter(i => c.includes(i))).join().replaceAll(',', ', ')
-
+		return arr.reduce((a, c) => a.filter(i => c.includes(i))).join().replaceAll(',', ', ')
 }
 export const ListCurrentGame: ChatCommand = {
 	name: 'listcurrentgame',
@@ -25,10 +24,19 @@ export const ListCurrentGame: ChatCommand = {
 				.setDescription(`The people who were asked to play ${game} this week`)
 				.setTimestamp()
 				.setFooter({ text: 'Nelson Net | 2022', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
+				let missingValue = false
 			gamers.forEach((gamer) => {
-				embed.addFields({ name: `${gamer.name} can game on:`, value: gamer.days.join().replaceAll(',', ', ') })
+				if(gamer.days.length > 0){
+					embed.addFields({ name: `${gamer.name} can game on:`, value: gamer.days.join().replaceAll(',', ', ') })
+				}
+				else {
+					missingValue = true
+					embed.addFields({ name: `${gamer.name} has not selected days yet:`, value: 'Please use the box below to select your days' })
+				}
 			})
-			embed.addFields({ name: 'The best day(s) for everyone are:', value: calculateIntersect(gamers) })
+			if(!missingValue){
+				embed.addFields({ name: 'The best day(s) for everyone are:', value: calculateIntersect(gamers) })
+			}
 			const row = new ActionRowBuilder()
 				.addComponents(
 					new SelectMenuBuilder()
