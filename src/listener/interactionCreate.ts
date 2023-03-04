@@ -1,5 +1,5 @@
 import { ButtonInteraction, ChatInputCommandInteraction, Client, SelectMenuInteraction } from 'discord.js'
-import { handleBoolResponse } from '../helpers/boolhandler'
+import { handleBoolButtonResponse, handleBoolResponse } from '../helpers/boolHandler'
 import { handleNotDead } from '../helpers/notdeadhandler'
 import { Commands } from '../commands'
 import { handleScheduleResponse } from '../helpers/schedulehandler'
@@ -11,17 +11,20 @@ export default (client: Client): void => {
 			if (interaction.customId == 'notdead') {
 				handleNotDead(interaction, client)
 			} else {
-				handleBoolResponse(interaction, client)
+				handleBoolButtonResponse(interaction, client)
 			}
 		}
 		if (interaction.isSelectMenu()) {
 			interaction = interaction as SelectMenuInteraction
-			handleScheduleResponse(interaction, client)
+			if (interaction.customId === 'boolSelect') {
+				handleBoolResponse(interaction, client)
+			} else {
+				handleScheduleResponse(interaction, client)
+			}
 		}
 		if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
 			await handleSlashCommand(client, interaction as ChatInputCommandInteraction)
 		}
-
 	})
 }
 

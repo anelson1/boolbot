@@ -1,7 +1,7 @@
 import { Client, ActionRowBuilder, EmbedBuilder, SelectMenuBuilder } from 'discord.js'
 import { ChatCommand } from '../command'
 import fs from 'fs'
-import { GameData, GameResponse } from './gamer-schedule'
+import { GameData, GameResponse } from './gamerSchedule'
 
 const calculateIntersect = (gamers: GameResponse[]) => {
 	const arr: string[][] = []

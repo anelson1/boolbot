@@ -1,6 +1,6 @@
 import { Client, EmbedBuilder, SelectMenuInteraction, TextChannel } from 'discord.js'
 import fs from 'fs'
-import { GameData, GameResponse } from 'src/commands/gamer-schedule'
+import { GameData, GameResponse } from 'src/commands/gamerSchedule'
 
 export const handleScheduleResponse = async (interaction: SelectMenuInteraction, client: Client) => {
 	const user = interaction.user

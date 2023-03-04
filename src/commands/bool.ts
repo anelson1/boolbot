@@ -1,65 +1,92 @@
-import { Client, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember } from 'discord.js'
+import { Client, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, SelectMenuInteraction, SelectMenuBuilder, Role } from 'discord.js'
 import { ChatCommand } from '../command'
 import fs from 'fs'
 
-type BoolResponse = {
+export type BoolResponse = {
 	id: string
-	RSVP: string
 	name: string | null
+	days: string[]
 }
 
+const generateMessageContent = (interaction: SelectMenuInteraction): { embed: EmbedBuilder; row: ActionRowBuilder } => {
+	const embed = new EmbedBuilder()
+		.setColor(0x6b9fcb)
+		.setTitle('Bool Invite')
+		.setAuthor({ name: interaction.user.username as string, iconURL: interaction.user.avatarURL() as string })
+		.setDescription(`${interaction.user.username} would like to bool this week. Once three people submit their days, a bool will be created`)
+		.addFields({ name: 'Please select the days this week you are available to bool', value: 'You can select multiple', inline: true })
+		.setTimestamp()
+		.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
+	const row = new ActionRowBuilder().addComponents(
+		new SelectMenuBuilder().setCustomId('boolSelect').setPlaceholder('No Days').setMinValues(0).setMaxValues(7).addOptions(
+			{
+				label: 'Monday',
+				value: 'monday',
+			},
+			{
+				label: 'Tuesday',
+				value: 'tuesday',
+			},
+			{
+				label: 'Wednesday',
+				value: 'wednesday',
+			},
+			{
+				label: 'Thursday',
+				value: 'thursday',
+			},
+			{
+				label: 'Friday',
+				value: 'friday',
+			},
+			{
+				label: 'Saturday',
+				value: 'saturday',
+			},
+			{
+				label: 'Sunday',
+				value: 'sunday',
+			},
+		),
+	)
+	return { embed, row }
+}
+
+const dmRoleMembers = async (role: Role, interaction: SelectMenuInteraction): Promise<BoolResponse[]> => {
+	const boolData: BoolResponse[] = []
+	role?.members.forEach((member) => {
+		const scheduleEntry: BoolResponse = { id: member.id, name: member.nickname, days: [] }
+		boolData.push(scheduleEntry)
+		member.createDM().then((dm) => {
+			const { embed, row } = generateMessageContent(interaction)
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			dm.send({ embeds: [embed], components: [row] })
+		})
+	})
+	return boolData
+}
 export const Bool: ChatCommand = {
 	name: 'bool',
-	description: 'Ask the fellas to bool on a given date',
-	options: [
-		{
-			name: 'date',
-			type: 3,
-			description: 'The date on which to bool',
-			required: true,
-		},
-	],
+	description: 'Ask the fellas to bool this week',
 	run: async (client: Client, interaction) => {
 		const guild = await client.guilds.fetch('423937254046826496')
-		const boolData = {
-			date: interaction.options._hoistedOptions[0].value,
-			boolers: [] as Array<BoolResponse>,
-		}
 		await guild.members.fetch()
 		const boolinRole = guild.roles.cache.get('855652264663318540')
-		boolinRole?.members.forEach((member) => {
-			const newBooler: BoolResponse = { id: member.id, RSVP: 'NA', name: member.nickname }
-			boolData.boolers.push(newBooler)
-			member.createDM().then((dm) => {
-				const embed = new EmbedBuilder()
-					.setColor(0x350f4f)
-					.setTitle('Bool Invite')
-					.setAuthor({ name: interaction.user.username as string, iconURL: interaction.user.avatarURL() })
-					.setDescription(interaction.user.username + ' would like to bool on ' + interaction.options._hoistedOptions[0].value)
-					.setTimestamp()
-					.setFooter({ text: 'Nelson Net | 2022', iconURL: 'https://i.pinimg.com/originals/8f/a0/27/8fa027d12ec18ac6fcb4567523f64fe3.jpg' })
-				dm.send({ embeds: [embed], components: [row] })
-			})
-		})
+		const boolData = await dmRoleMembers(boolinRole as Role, interaction)
 		const data = JSON.stringify(boolData)
-		fs.writeFile('./src/data/booldata.json', data, (err) => {
+		fs.writeFile('./src/data/boolDayData.json', data, (err) => {
 			if (err) {
 				console.log(err)
 			}
 		})
-		const member = interaction.member as GuildMember
-		const embed = new EmbedBuilder()
-			.setColor(0x350f4f)
-			.setTitle('Sending Bool Invites')
-			.setAuthor({ name: member.nickname as string, iconURL: member.user.avatarURL() as string })
-			.setDescription(member.nickname + ' Would like to bool on ' + interaction.options._hoistedOptions[0].value)
-			.addFields({ name: 'Please check your DMs', value: 'or click a button below' })
-			.setTimestamp()
-			.setFooter({ text: 'Nelson Net | 2022', iconURL: 'https://i.pinimg.com/originals/8f/a0/27/8fa027d12ec18ac6fcb4567523f64fe3.jpg' })
-		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder().setCustomId('y').setLabel('Yes').setStyle(ButtonStyle.Success),
-			new ButtonBuilder().setCustomId('n').setLabel('No').setStyle(ButtonStyle.Danger),
-		)
+		fs.writeFile('./src/data/boolData.json', '', (err) => {
+			if (err) {
+				console.log(err)
+			}
+		})
+
+		const { embed, row } = generateMessageContent(interaction)
 
 		await interaction.followUp({ embeds: [embed], components: [row] })
 	},
