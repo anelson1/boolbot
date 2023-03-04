@@ -48,7 +48,8 @@ const checkResponses = (boolData: BoolResponse[]) => {
 }
 
 const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction: SelectMenuInteraction) => {
-	const boolRSVP = boolData.map((booler) => {
+	const filteredBoolers = boolData.filter((booler) => booler.days.includes(day))
+	const boolRSVP = filteredBoolers.map((booler) => {
 		return {
 			id: booler.id,
 			RSVP: true,
@@ -63,7 +64,7 @@ const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction
 		.setThumbnail(nelsonNetIcon)
 		.setTimestamp()
 		.setFooter({ text: 'Nelson Net | 2023', iconURL: nelsonNetIcon })
-		.setDescription(`${boolData.map((booler) => booler.name).join(', ')} will be boolin on ${day} at 4:00 Standard Bool Time`)
+		.setDescription(`${filteredBoolers.map((booler) => booler.name).join(', ')} will be boolin on ${day} at 4:00 Standard Bool Time`)
 		.addFields({ name: 'Reminder', value: 'Use /listbool to see the most updated active bool list' })
 	interaction.reply({ embeds: [embed] })
 }
@@ -88,7 +89,6 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 		fs.writeFileSync('./src/data/boolDayData.json', boolers)
 		const boolDays = checkResponses(boolFile)
 		const selectedDay = boolDays.filter((dayEntry) => dayEntry.count >= 3)[0]?.day
-		console.log(boolDays)
 		if (selectedDay) {
 			initiateBoolSchedule(selectedDay, boolFile, interaction)
 		} else {
@@ -104,10 +104,10 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 					.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 					.setDescription(`${user.username} has killed the bool...`)
 				interaction.reply({ embeds: [embed] })
-				const general = client.channels.cache.get('423937254046826498') as TextChannel
-				if (interaction.channelId !== general.id) {
-					general.send({ embeds: [embed] })
-				}
+				// const general = client.channels.cache.get('423937254046826498') as TextChannel
+				// if (interaction.channelId !== general.id) {
+				// 	general.send({ embeds: [embed] })
+				// }
 			} else {
 				const embed = new EmbedBuilder()
 					.setTitle('Bool RSVP')
@@ -118,10 +118,10 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 					.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 					.setDescription(`${user.username} can bool this week on ${newEntry.days.join().replaceAll(',', ', ')}`)
 				interaction.reply({ embeds: [embed] })
-				const general = client.channels.cache.get('423937254046826498') as TextChannel
-				if (interaction.channelId !== general.id) {
-					general.send({ embeds: [embed] })
-				}
+				// const general = client.channels.cache.get('423937254046826498') as TextChannel
+				// if (interaction.channelId !== general.id) {
+				// 	general.send({ embeds: [embed] })
+				// }
 			}
 		}
 	})
@@ -172,9 +172,9 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 			embed.setColor(0xff0000)
 			interaction.reply({ embeds: [embed] })
 			const general = client.channels.cache.get('423937254046826498') as TextChannel
-			if (interaction.channelId !== general.id) {
-				general.send({ embeds: [embed] })
-			}
+			// if (interaction.channelId !== general.id) {
+			// 	general.send({ embeds: [embed] })
+			// }
 			fs.writeFileSync('./src/data/boolData.json', '')
 		} else {
 			const boolers = JSON.stringify(boolFile)
@@ -194,10 +194,10 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 				embed.setColor(0xff0000)
 			}
 			interaction.reply({ embeds: [embed] })
-			const general = client.channels.cache.get('423937254046826498') as TextChannel
-			if (interaction.channelId !== general.id) {
-				general.send({ embeds: [embed] })
-			}
+			// const general = client.channels.cache.get('423937254046826498') as TextChannel
+			// if (interaction.channelId !== general.id) {
+			// 	general.send({ embeds: [embed] })
+			// }
 			fs.writeFileSync('./src/data/boolData.json', boolers)
 		}
 	})
