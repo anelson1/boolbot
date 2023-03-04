@@ -48,7 +48,8 @@ const checkResponses = (boolData: BoolResponse[]) => {
 }
 
 const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction: SelectMenuInteraction) => {
-	const boolRSVP = boolData.map((booler) => {
+	const filteredBoolers = boolData.filter((booler) => booler.days.includes(day))
+	const boolRSVP = filteredBoolers.map((booler) => {
 		return {
 			id: booler.id,
 			RSVP: true,
@@ -63,7 +64,7 @@ const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction
 		.setThumbnail(nelsonNetIcon)
 		.setTimestamp()
 		.setFooter({ text: 'Nelson Net | 2023', iconURL: nelsonNetIcon })
-		.setDescription(`${boolData.map((booler) => booler.name).join(', ')} will be boolin on ${day} at 4:00 Standard Bool Time`)
+		.setDescription(`${filteredBoolers.map((booler) => booler.name).join(', ')} will be boolin on ${day} at 4:00 Standard Bool Time`)
 		.addFields({ name: 'Reminder', value: 'Use /listbool to see the most updated active bool list' })
 	interaction.reply({ embeds: [embed] })
 }
@@ -88,7 +89,6 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 		fs.writeFileSync('./src/data/boolDayData.json', boolers)
 		const boolDays = checkResponses(boolFile)
 		const selectedDay = boolDays.filter((dayEntry) => dayEntry.count >= 3)[0]?.day
-		console.log(boolDays)
 		if (selectedDay) {
 			initiateBoolSchedule(selectedDay, boolFile, interaction)
 		} else {

@@ -7,7 +7,7 @@ export const ListBool: ChatCommand = {
 	name: 'listbool',
 	description: 'Lists everyone who was asked to bool and their responses',
 	run: async (client: Client, interaction) => {
-		fs.readFile('./src/data/booldata.json', 'utf8', async (err, content) => {
+		fs.readFile('./src/data/boolData.json', 'utf8', async (err, content) => {
 			if (content) {
 				const boolData = JSON.parse(content) as BoolSchedule
 				const day = boolData.day
