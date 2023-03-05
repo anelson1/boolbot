@@ -88,9 +88,11 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 		const boolers = JSON.stringify(boolFile)
 		fs.writeFileSync('./src/data/boolDayData.json', boolers)
 		const boolDays = checkResponses(boolFile)
-		const selectedDay = boolDays.filter((dayEntry) => dayEntry.count >= 3)[0]?.day
-		if (selectedDay) {
-			initiateBoolSchedule(selectedDay, boolFile, interaction)
+		const validDays = boolDays.filter((dayEntry) => dayEntry.count >= 3)
+		if (validDays) {
+			const maxDay = Math.max(...validDays.map((day) => day.count))
+			const selectedDay = validDays.find((day) => day.count === maxDay) as { day: string; count: number }
+			initiateBoolSchedule(selectedDay.day, boolFile, interaction)
 		} else {
 			const currentBoolData = fs.readFileSync('./src/data/boolData.json')
 			fs.writeFileSync('./src/data/boolData.json', '')
