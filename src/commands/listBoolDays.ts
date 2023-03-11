@@ -10,7 +10,7 @@ export const ListBoolDays: ChatCommand = {
 		fs.readFile('./src/data/boolDayData.json', 'utf8', async (err, content) => {
 			const boolData = JSON.parse(content) as BoolResponse[]
 			const embed = new EmbedBuilder()
-				.setColor(0x6b9fcb)
+				.setColor(0x20603d)
 				.setTitle('Bool Days List')
 				.setDescription('The people who were asked to bool this week')
 				.setTimestamp()

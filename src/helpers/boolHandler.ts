@@ -1,6 +1,7 @@
 import { ButtonInteraction, Client, EmbedBuilder, SelectMenuInteraction, TextChannel } from 'discord.js'
 import fs from 'fs'
 import { BoolResponse } from '../commands/bool'
+import { BOOL_CHANNEL_ID } from 'src/constants'
 
 export interface BoolRSVP {
 	id: string
@@ -58,7 +59,7 @@ const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction
 	})
 	fs.writeFileSync('./src/data/boolData.json', JSON.stringify({ day, boolRSVP }))
 	const embed = new EmbedBuilder()
-		.setTitle('Finalized Bool-V2 RSVP')
+		.setTitle('Finalized Bool V2 RSVP')
 		.setColor(0xd6ae01)
 		.setAuthor({ name: 'The Boolers', iconURL: nelsonNetIcon })
 		.setThumbnail(nelsonNetIcon)
@@ -106,10 +107,10 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 					.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 					.setDescription(`${user.username} has killed the bool...`)
 				interaction.reply({ embeds: [embed] })
-				// const general = client.channels.cache.get('423937254046826498') as TextChannel
-				// if (interaction.channelId !== general.id) {
-				// 	general.send({ embeds: [embed] })
-				// }
+				const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
+				if (interaction.channelId !== boolChannel.id) {
+					boolChannel.send({ embeds: [embed] })
+				}
 			} else {
 				const embed = new EmbedBuilder()
 					.setTitle('Bool RSVP')
@@ -120,10 +121,10 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 					.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 					.setDescription(`${user.username} can bool this week on ${newEntry.days.join().replaceAll(',', ', ')}`)
 				interaction.reply({ embeds: [embed] })
-				// const general = client.channels.cache.get('423937254046826498') as TextChannel
-				// if (interaction.channelId !== general.id) {
-				// 	general.send({ embeds: [embed] })
-				// }
+				const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
+				if (interaction.channelId !== boolChannel.id) {
+					boolChannel.send({ embeds: [embed] })
+				}
 			}
 		}
 	})
@@ -173,10 +174,10 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 			embed.setDescription(user.username + ' has killed the bool...')
 			embed.setColor(0xff0000)
 			interaction.reply({ embeds: [embed] })
-			const general = client.channels.cache.get('423937254046826498') as TextChannel
-			// if (interaction.channelId !== general.id) {
-			// 	general.send({ embeds: [embed] })
-			// }
+			const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
+			if (interaction.channelId !== boolChannel.id) {
+				boolChannel.send({ embeds: [embed] })
+			}
 			fs.writeFileSync('./src/data/boolData.json', '')
 		} else {
 			const boolers = JSON.stringify(boolFile)
@@ -195,12 +196,12 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 				embed.setDescription(user.username + ' is dipping out of the bool...')
 				embed.setColor(0xff0000)
 			}
-			interaction.reply({ embeds: [embed] })
-			// const general = client.channels.cache.get('423937254046826498') as TextChannel
-			// if (interaction.channelId !== general.id) {
-			// 	general.send({ embeds: [embed] })
-			// }
 			fs.writeFileSync('./src/data/boolData.json', boolers)
+			interaction.reply({ embeds: [embed] })
+			const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
+			if (interaction.channelId !== boolChannel.id) {
+				boolChannel.send({ embeds: [embed] })
+			}
 		}
 	})
 }

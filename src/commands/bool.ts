@@ -1,6 +1,7 @@
 import { Client, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, SelectMenuInteraction, SelectMenuBuilder, Role } from 'discord.js'
 import { ChatCommand } from '../command'
 import fs from 'fs'
+import { BOOLIN_ROLE_ID, SERVER_ID } from 'src/constants'
 
 export type BoolResponse = {
 	id: string
@@ -70,9 +71,9 @@ export const Bool: ChatCommand = {
 	name: 'bool',
 	description: 'Ask the fellas to bool this week',
 	run: async (client: Client, interaction) => {
-		const guild = await client.guilds.fetch('423937254046826496')
+		const guild = await client.guilds.fetch(SERVER_ID)
 		await guild.members.fetch()
-		const boolinRole = guild.roles.cache.get('855652264663318540')
+		const boolinRole = guild.roles.cache.get(BOOLIN_ROLE_ID)
 		const boolData = await dmRoleMembers(boolinRole as Role, interaction)
 		const data = JSON.stringify(boolData)
 		fs.writeFile('./src/data/boolDayData.json', data, (err) => {
