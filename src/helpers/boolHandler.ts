@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, Embed, EmbedBuilder, Interaction, SelectMenuInteraction, TextChannel } from 'discord.js'
+import { ButtonInteraction, Client, EmbedBuilder, SelectMenuInteraction, TextChannel } from 'discord.js'
 import fs from 'fs'
 import { BoolResponse } from '../commands/bool'
 import { BOOL_CHANNEL_ID } from '../constants'
@@ -13,7 +13,7 @@ export interface BoolSchedule {
 	boolRSVP: BoolRSVP[]
 }
 export const nelsonNetIcon = 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1'
-export const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+export const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'none']
 
 export const calculateBoolIntersect = (gamers: BoolResponse[]): { day: string; count: number }[] => {
 	const arr: string[][] = []

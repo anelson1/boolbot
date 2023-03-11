@@ -48,6 +48,10 @@ const generateMessageContent = (interaction: SelectMenuInteraction): { embed: Em
 				label: 'Sunday',
 				value: 'sunday',
 			},
+			{
+				label: 'No Days this Week',
+				value: 'none',
+			},
 		),
 	)
 	return { embed, row }

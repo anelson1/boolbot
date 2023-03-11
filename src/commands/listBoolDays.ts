@@ -53,6 +53,10 @@ export const ListBoolDays: ChatCommand = {
 						label: 'Sunday',
 						value: 'sunday',
 					},
+					{
+						label: 'No Days this Week',
+						value: 'none',
+					},
 				),
 			)
 			await interaction.followUp({ embeds: [embed], components: [row] })
