@@ -1,7 +1,7 @@
 import { ButtonInteraction, Client, EmbedBuilder, SelectMenuInteraction, TextChannel } from 'discord.js'
 import fs from 'fs'
 import { BoolResponse } from '../commands/bool'
-import { BOOL_CHANNEL_ID } from 'src/constants'
+import { BOOL_CHANNEL_ID } from '../constants'
 
 export interface BoolRSVP {
 	id: string

@@ -1,7 +1,7 @@
 import { Client, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, SelectMenuInteraction, SelectMenuBuilder, Role } from 'discord.js'
 import { ChatCommand } from '../command'
 import fs from 'fs'
-import { BOOLIN_ROLE_ID, SERVER_ID } from 'src/constants'
+import { BOOLIN_ROLE_ID, SERVER_ID } from '../constants'
 
 export type BoolResponse = {
 	id: string
