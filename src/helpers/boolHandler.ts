@@ -1,4 +1,4 @@
-import { ButtonInteraction, Client, EmbedBuilder, SelectMenuInteraction, TextChannel } from 'discord.js'
+import { ButtonInteraction, Client, Embed, EmbedBuilder, Interaction, SelectMenuInteraction, TextChannel } from 'discord.js'
 import fs from 'fs'
 import { BoolResponse } from '../commands/bool'
 import { BOOL_CHANNEL_ID } from '../constants'
@@ -48,7 +48,7 @@ const checkResponses = (boolData: BoolResponse[]) => {
 	return calculateBoolIntersect(validBoolers)
 }
 
-const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction: SelectMenuInteraction) => {
+const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction: SelectMenuInteraction, client: Client) => {
 	const filteredBoolers = boolData.filter((booler) => booler.days.includes(day))
 	const boolRSVP = filteredBoolers.map((booler) => {
 		return {
@@ -67,7 +67,7 @@ const initiateBoolSchedule = (day: string, boolData: BoolResponse[], interaction
 		.setFooter({ text: 'Nelson Net | 2023', iconURL: nelsonNetIcon })
 		.setDescription(`${filteredBoolers.map((booler) => booler.name).join(', ')} will be boolin on ${day} at 4:00 Standard Bool Time`)
 		.addFields({ name: 'Reminder', value: 'Use /listbool to see the most updated active bool list' })
-	interaction.reply({ embeds: [embed] })
+	acknowledgeBoolResponse(client, embed, interaction)
 }
 
 export const handleBoolResponse = async (interaction: SelectMenuInteraction, client: Client) => {
@@ -93,12 +93,13 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 		if (validDays.length) {
 			const maxDay = Math.max(...validDays.map((day) => day.count))
 			const selectedDay = validDays.find((day) => day.count === maxDay) as { day: string; count: number }
-			initiateBoolSchedule(selectedDay.day, boolFile, interaction)
+			initiateBoolSchedule(selectedDay.day, boolFile, interaction, client)
 		} else {
 			const currentBoolData = fs.readFileSync('./src/data/boolData.json')
 			fs.writeFileSync('./src/data/boolData.json', '')
+			let embed
 			if (currentBoolData.length > 0) {
-				const embed = new EmbedBuilder()
+				embed = new EmbedBuilder()
 					.setTitle('Bool RSVP')
 					.setColor(0xff0000)
 					.setAuthor({ name: user.username, iconURL: user.avatarURL() as string })
@@ -106,13 +107,8 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 					.setTimestamp()
 					.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 					.setDescription(`${user.username} has killed the bool...`)
-				interaction.reply({ embeds: [embed] })
-				const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
-				if (interaction.channelId !== boolChannel.id) {
-					boolChannel.send({ embeds: [embed] })
-				}
 			} else {
-				const embed = new EmbedBuilder()
+				embed = new EmbedBuilder()
 					.setTitle('Bool RSVP')
 					.setColor(0x6b9fcb)
 					.setAuthor({ name: user.username, iconURL: user.avatarURL() as string })
@@ -120,12 +116,8 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 					.setTimestamp()
 					.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 					.setDescription(`${user.username} can bool this week on ${newEntry.days.join().replaceAll(',', ', ')}`)
-				interaction.reply({ embeds: [embed] })
-				const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
-				if (interaction.channelId !== boolChannel.id) {
-					boolChannel.send({ embeds: [embed] })
-				}
 			}
+			acknowledgeBoolResponse(client, embed, interaction)
 		}
 	})
 }
@@ -173,12 +165,8 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 				.setFooter({ text: 'Nelson Net | 2022', iconURL: nelsonNetIcon })
 			embed.setDescription(user.username + ' has killed the bool...')
 			embed.setColor(0xff0000)
-			interaction.reply({ embeds: [embed] })
-			const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
-			if (interaction.channelId !== boolChannel.id) {
-				boolChannel.send({ embeds: [embed] })
-			}
 			fs.writeFileSync('./src/data/boolData.json', '')
+			acknowledgeBoolResponse(client, embed, interaction)
 		} else {
 			const boolers = JSON.stringify(boolFile)
 			const embed = new EmbedBuilder()
@@ -197,11 +185,16 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 				embed.setColor(0xff0000)
 			}
 			fs.writeFileSync('./src/data/boolData.json', boolers)
-			interaction.reply({ embeds: [embed] })
-			const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
-			if (interaction.channelId !== boolChannel.id) {
-				boolChannel.send({ embeds: [embed] })
-			}
+			acknowledgeBoolResponse(client, embed, interaction)
 		}
 	})
+}
+
+const acknowledgeBoolResponse = (client: Client, embed: EmbedBuilder, interaction: ButtonInteraction | SelectMenuInteraction) => {
+	const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
+	interaction.reply({ content: `Your response has been recorded. Please see ${boolChannel.toString()} for the current bool status`, ephemeral: true })
+
+	if (interaction.channelId !== boolChannel.id) {
+		boolChannel.send({ embeds: [embed] })
+	}
 }
