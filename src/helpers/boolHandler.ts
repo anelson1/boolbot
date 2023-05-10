@@ -193,8 +193,6 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 const acknowledgeBoolResponse = (client: Client, embed: EmbedBuilder, interaction: ButtonInteraction | SelectMenuInteraction) => {
 	const boolChannel = client.channels.cache.get(BOOL_CHANNEL_ID) as TextChannel
 	interaction.reply({ content: `Your response has been recorded. Please see ${boolChannel.toString()} for the current bool status`, ephemeral: true })
-
-	if (interaction.channelId !== boolChannel.id) {
-		boolChannel.send({ embeds: [embed] })
-	}
+	boolChannel.send({ embeds: [embed] })
+	
 }
