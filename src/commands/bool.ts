@@ -1,7 +1,10 @@
-import { Client, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, SelectMenuInteraction, SelectMenuBuilder, Role } from 'discord.js'
+import { Client, ActionRowBuilder, EmbedBuilder, SelectMenuInteraction, SelectMenuBuilder, Role } from 'discord.js'
 import { ChatCommand } from '../command'
-import fs from 'fs'
 import { BOOLIN_ROLE_ID, SERVER_ID } from '../constants'
+import { getDays } from '../helpers/boolHandler'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export type BoolResponse = {
 	id: string
@@ -19,40 +22,19 @@ const generateMessageContent = (interaction: SelectMenuInteraction): { embed: Em
 		.setTimestamp()
 		.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 	const row = new ActionRowBuilder().addComponents(
-		new SelectMenuBuilder().setCustomId('boolSelect').setPlaceholder('No Days').setMinValues(0).setMaxValues(7).addOptions(
-			{
-				label: 'Monday',
-				value: 'monday',
-			},
-			{
-				label: 'Tuesday',
-				value: 'tuesday',
-			},
-			{
-				label: 'Wednesday',
-				value: 'wednesday',
-			},
-			{
-				label: 'Thursday',
-				value: 'thursday',
-			},
-			{
-				label: 'Friday',
-				value: 'friday',
-			},
-			{
-				label: 'Saturday',
-				value: 'saturday',
-			},
-			{
-				label: 'Sunday',
-				value: 'sunday',
-			},
-			{
-				label: 'No Days this Week',
-				value: 'none',
-			},
-		),
+		new SelectMenuBuilder()
+			.setCustomId('boolSelect')
+			.setPlaceholder('No Days')
+			.setMinValues(0)
+			.setMaxValues(7)
+			.addOptions(
+				getDays().map((day) => {
+					return {
+						label: day,
+						value: day,
+					}
+				}),
+			),
 	)
 	return { embed, row }
 }
@@ -71,26 +53,42 @@ const dmRoleMembers = async (role: Role, interaction: SelectMenuInteraction): Pr
 	})
 	return boolData
 }
+
+const saveBoolHistory = async () => {
+	await prisma.boolDays.deleteMany()
+	const previousBool = await prisma.boolRSVP.findMany()
+	if (previousBool.length) {
+		const previousBoolers: string[] = []
+		previousBool.forEach((previousBooler) => {
+			previousBoolers.push(previousBooler.username)
+		})
+		await prisma.historicBools.create({
+			data: {
+				boolDate: previousBool[0].boolDate,
+				boolers: JSON.stringify(previousBoolers),
+			},
+		})
+	}
+	await prisma.boolRSVP.deleteMany()
+}
 export const Bool: ChatCommand = {
 	name: 'bool',
 	description: 'Ask the fellas to bool this week',
 	run: async (client: Client, interaction) => {
+		await saveBoolHistory()
 		const guild = await client.guilds.fetch(SERVER_ID)
 		await guild.members.fetch()
 		const boolinRole = guild.roles.cache.get(BOOLIN_ROLE_ID)
 		const boolData = await dmRoleMembers(boolinRole as Role, interaction)
-		const data = JSON.stringify(boolData)
-		fs.writeFile('./src/data/boolDayData.json', data, (err) => {
-			if (err) {
-				console.log(err)
-			}
-		})
-		fs.writeFile('./src/data/boolData.json', '', (err) => {
-			if (err) {
-				console.log(err)
-			}
-		})
-
+		for (const booler of boolData) {
+			await prisma.boolDays.create({
+				data: {
+					id: booler.id,
+					username: booler.name as string,
+					days: '',
+				},
+			})
+		}
 		const { embed, row } = generateMessageContent(interaction)
 
 		await interaction.followUp({ embeds: [embed], components: [row] })

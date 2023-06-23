@@ -2,9 +2,7 @@
   "name": "boolbot",
   "version": "1.0.0",
   "description": "A discord bot to handle bool RSVPs",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/boolbot.ts",
     "deploy": "ts-node src/deployCommands.ts",
     "lint": "eslint . --ext .ts",
@@ -15,17 +13,20 @@
   "dependencies": {
     "@babel/plugin-transform-typescript": "^7.18.8",
     "@discordjs/rest": "^1.0.0",
+    "@prisma/client": "^4.16.1",
     "@types/node": "^18.0.6",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.1",
-    "eslint": "^8.20.0",
     "i": "^0.3.7",
+    "moment": "^2.29.4",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.18.9",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
-    "prettier": "^2.7.1"
+    "eslint": "^8.20.0",
+    "prettier": "^2.7.1",
+    "prisma": "^4.16.1"
   }
 }
