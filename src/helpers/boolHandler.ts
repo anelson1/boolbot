@@ -51,7 +51,12 @@ const checkResponses = async () => {
 	const boolers = await prisma.boolDays.findMany()
 	const validBoolers: BoolResponse[] = []
 	boolers.forEach((booler) => {
-		const availableDays = JSON.parse(booler.days)
+		let availableDays
+		try {
+			availableDays = JSON.parse(booler.days)
+		} catch {
+			availableDays = ''
+		}
 		if (availableDays.length > 0) {
 			validBoolers.push({
 				id: booler.id,
@@ -99,7 +104,7 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 		},
 	})
 	if (!boolerResponse) {
-		prisma.boolDays.create({
+		await prisma.boolDays.create({
 			data: {
 				id: newEntry.id,
 				username: user.username,
