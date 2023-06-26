@@ -70,7 +70,13 @@ const checkResponses = async () => {
 
 const initiateBoolSchedule = async (day: string, interaction: SelectMenuInteraction, client: Client) => {
 	const boolers = await prisma.boolDays.findMany()
-	const filteredBoolers = boolers.filter((booler) => JSON.parse(booler.days).includes(day))
+	const filteredBoolers = boolers.filter((booler) => {
+		try {
+			return JSON.parse(booler.days).includes(day)
+		} catch {
+			return ''
+		}
+	})
 	for (const booler of filteredBoolers) {
 		const rsvpBooler = {
 			id: booler.id,
