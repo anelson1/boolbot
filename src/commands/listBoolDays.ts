@@ -17,9 +17,14 @@ export const ListBoolDays: ChatCommand = {
 			.setTimestamp()
 			.setFooter({ text: 'Nelson Net | 2023', iconURL: 'https://www.dropbox.com/s/bz14u4wvt6r0bxf/c46db7762bcc683e809090864ef46177.png?raw=1' })
 		boolData.forEach((booler) => {
-			if (booler.days.length > 0) {
-				embed.addFields({ name: `${booler.username} can bool on:`, value: JSON.parse(booler.days).join().replaceAll(',', ' :small_orange_diamond: ') })
-			} else {
+			try {
+				const days = JSON.parse(booler.days)
+				if (days.length > 0) {
+					embed.addFields({ name: `${booler.username} can bool on:`, value: days.join().replaceAll(',', ' :small_orange_diamond: ') })
+				} else {
+					embed.addFields({ name: `${booler.username} can not bool this week:`, value: ':pensive:' })
+				}
+			} catch {
 				embed.addFields({ name: `${booler.username} has not selected days yet:`, value: 'Please use the box below to select your days' })
 			}
 		})
