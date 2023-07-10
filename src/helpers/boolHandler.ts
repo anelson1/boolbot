@@ -51,6 +51,7 @@ const checkResponses = async () => {
 	const boolers = await prisma.boolDays.findMany()
 	const validBoolers: BoolResponse[] = []
 	boolers.forEach((booler) => {
+		console.debug(`${booler.username} can bool on ${booler.days}`)
 		let availableDays
 		try {
 			availableDays = JSON.parse(booler.days)
@@ -70,6 +71,7 @@ const checkResponses = async () => {
 
 const initiateBoolSchedule = async (day: string, interaction: SelectMenuInteraction, client: Client) => {
 	const boolers = await prisma.boolDays.findMany()
+	console.info(`A bool is being created with ${boolers}`)
 	const filteredBoolers = boolers.filter((booler) => {
 		try {
 			return JSON.parse(booler.days).includes(day)
@@ -133,7 +135,9 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 		})
 	}
 	const boolDays = await checkResponses()
+	console.debug(`The days that work are ${JSON.stringify(boolDays)}`)
 	const validDays = boolDays.filter((dayEntry) => dayEntry.count >= 3)
+	console.debug(`The days that have above 3 members are ${validDays}`)
 	if (validDays.length) {
 		const maxDay = Math.max(...validDays.map((day) => day.count))
 		const selectedDay = validDays.find((day) => day.count === maxDay) as { day: string; count: number }
@@ -190,8 +194,6 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 			},
 		})
 	} else if (!(newEntry.RSVP === booler.isBooling)) {
-		console.log('diff res')
-
 		await prisma.boolRSVP.update({
 			where: {
 				id: newEntry.id,
@@ -201,7 +203,6 @@ export const handleBoolButtonResponse = async (interaction: ButtonInteraction, c
 			},
 		})
 	} else {
-		console.log('same res')
 		const repeatEmbed = new EmbedBuilder()
 			.setTitle('Bool V2 RSVP')
 			.setAuthor({ name: user.username, iconURL: user.avatarURL() as string })
