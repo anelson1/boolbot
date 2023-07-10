@@ -135,7 +135,7 @@ export const handleBoolResponse = async (interaction: SelectMenuInteraction, cli
 		})
 	}
 	const boolDays = await checkResponses()
-	console.debug(`The days that work are ${boolDays}`)
+	console.debug(`The days that work are ${JSON.stringify(boolDays)}`)
 	const validDays = boolDays.filter((dayEntry) => dayEntry.count >= 3)
 	console.debug(`The days that have above 3 members are ${validDays}`)
 	if (validDays.length) {
