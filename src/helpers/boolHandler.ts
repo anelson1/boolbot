@@ -70,29 +70,35 @@ const checkResponses = async () => {
 	return calculateBoolIntersect(validBoolers)
 }
 
-const initiateBoolSchedule = async (day: string, interaction: SelectMenuInteraction, client: Client) => {
+const initiateBoolSchedule = async (selectedDay: string, interaction: SelectMenuInteraction, client: Client) => {
 	const boolers = await prisma.boolDays.findMany()
-	console.info(`A bool is being created with ${boolers}`)
+	let boolDate = ""
 	const filteredBoolers = boolers.filter((booler) => {
+		console.debug(`${booler.username} can bool on ${booler.days} and will be boolin on ${selectedDay}`)
 		try {
-			return JSON.parse(booler.days).includes(day)
+			const days = JSON.parse(booler.days) as string[]
+			return days.some(day => {
+				boolDate = day
+				return day.includes(selectedDay)
+			})
 		} catch {
 			return ''
 		}
 	})
+	console.info(`A bool is being created with ${JSON.stringify(filteredBoolers)}`)
 	for (const booler of filteredBoolers) {
 		await prisma.boolRSVP.upsert({
 			where: {
 				id: booler.id,
 			},
 			update: {
-				boolDate: day,
+				boolDate,
 			},
 			create: {
 				id: booler.id,
 				username: booler.username,
 				isBooling: true,
-				boolDate: day,
+				boolDate,
 			}
 		})
 	}
@@ -104,7 +110,7 @@ const initiateBoolSchedule = async (day: string, interaction: SelectMenuInteract
 		.setThumbnail(nelsonNetIcon)
 		.setTimestamp()
 		.setFooter({ text: 'Nelson Net | 2023', iconURL: nelsonNetIcon })
-		.setDescription(`${filteredBoolers.map((booler) => booler.username).join(', ')} will be boolin on ${day} at 4:00 (5:00 if Thursday) Standard Bool Time`)
+		.setDescription(`${filteredBoolers.map((booler) => booler.username).join(', ')} will be boolin on ${boolDate} at 4:00 (5:00 if Thursday) Standard Bool Time`)
 		.addFields({ name: 'Reminder', value: 'Use /listbool to see the most updated active bool list' })
 	acknowledgeBoolResponse(client, embed, interaction)
 }
