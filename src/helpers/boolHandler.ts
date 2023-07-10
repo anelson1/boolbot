@@ -84,8 +84,16 @@ const initiateBoolSchedule = async (day: string, interaction: SelectMenuInteract
 			isBooling: true,
 			boolDate: day,
 		}
-		await prisma.boolRSVP.create({
-			data: rsvpBooler,
+		await prisma.boolRSVP.upsert({
+			where: {
+				id: booler.id,
+			},
+			update: {
+				boolDate: day,
+			},
+			create: {
+				data: rsvpBooler,
+			}
 		})
 	}
 
