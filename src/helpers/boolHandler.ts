@@ -30,11 +30,12 @@ export const calculateBoolIntersect = (boolers: BoolResponse[]): { day: string; 
 		arr.push(booler.days)
 	})
 	const countList: { day: string; count: number }[] = []
-	getDays().forEach((day) => {
+	const daysList = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+	daysList.forEach((day) => {
 		let dayCount = 0
 		arr.forEach((dayList) => {
 			dayList.forEach((dayInList) => {
-				if (dayInList === day) {
+				if (dayInList.includes(day)) {
 					dayCount++
 				}
 			})
