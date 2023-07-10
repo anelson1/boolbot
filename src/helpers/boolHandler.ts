@@ -78,12 +78,6 @@ const initiateBoolSchedule = async (day: string, interaction: SelectMenuInteract
 		}
 	})
 	for (const booler of filteredBoolers) {
-		const rsvpBooler = {
-			id: booler.id,
-			username: booler.username,
-			isBooling: true,
-			boolDate: day,
-		}
 		await prisma.boolRSVP.upsert({
 			where: {
 				id: booler.id,
@@ -92,7 +86,10 @@ const initiateBoolSchedule = async (day: string, interaction: SelectMenuInteract
 				boolDate: day,
 			},
 			create: {
-				data: rsvpBooler,
+				id: booler.id,
+				username: booler.username,
+				isBooling: true,
+				boolDate: day,
 			}
 		})
 	}
