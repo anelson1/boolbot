@@ -9,7 +9,11 @@ export const ListBool: ChatCommand = {
 	name: 'listbool',
 	description: 'Lists everyone who was asked to bool and their responses',
 	run: async (client: Client, interaction) => {
-		const boolers = await prisma.boolRSVP.findMany()
+		const boolers = await prisma.boolRSVP.findMany({
+			where: {
+				isBooling: true,
+			},
+		})
 		if (boolers.length) {
 			const embed = new EmbedBuilder()
 				.setColor(0xff9733)

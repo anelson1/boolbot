@@ -56,7 +56,11 @@ const dmRoleMembers = async (role: Role, interaction: SelectMenuInteraction): Pr
 
 const saveBoolHistory = async () => {
 	await prisma.boolDays.deleteMany()
-	const previousBool = await prisma.boolRSVP.findMany()
+	const previousBool = await prisma.boolRSVP.findMany({
+		where: {
+			isBooling: true,
+		},
+	})
 	if (previousBool.length) {
 		const previousBoolers: string[] = []
 		previousBool.forEach((previousBooler) => {
